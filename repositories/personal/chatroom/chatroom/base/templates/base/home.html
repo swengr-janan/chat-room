@@ -2,7 +2,7 @@
 <style>
   .home-container {
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1fr 3fr 1fr;
   }
 </style>
 <h1>Home Template</h1>
@@ -28,8 +28,10 @@
     <div>
       {% for room in rooms %}
       <div>
+        {% if request.user == room.host %}
         <a href="{% url 'update-room' room.id%}">Edit</a>
         <a href="{% url 'delete-room' room.id%}">Delete</a>
+        {% endif %}
         <span>@{{room.host.username}}</span>
         <h5>
           {{room.id}} -- <a href="{% url 'room' room.id %}">{{room.name}}</a>
@@ -38,6 +40,22 @@
       </div>
       {% endfor %}
     </div>
+  </div>
+
+  <div>
+    <h3>Recent Activites</h3>
+    <hr />
+    {% for message in room_messages %}
+    <div>
+      <small>@{{message.user}} {{message.created|timesince}}</small>
+      <small>replied to "{{message.room}}"</small>
+      <p>{{message.body}}</p>
+      <hr />
+      {% if request.user == message.user %}
+      <a href="{% url 'delete-message' message.id %}">Delete</a>
+      {% endif %}
+    </div>
+    {% endfor %}
   </div>
 </div>
 {%endblock content%}
